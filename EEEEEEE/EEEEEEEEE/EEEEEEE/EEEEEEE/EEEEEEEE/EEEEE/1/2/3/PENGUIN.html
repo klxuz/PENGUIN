@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SYSTEM INTERFACE</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  image-rendering: pixelated;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #00ffd0;
+  font-family: 'Press Start 2P', monospace;
+  overflow: hidden;
+  user-select: none;
+}
+
+.wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 30px;
+}
+
+.title {
+  font-size: clamp(16px, 6vw, 42px);
+  color: #fff;
+  position: relative;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.title::before,
+.title::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.title::before { color: red; animation: glitch1 0.3s infinite; }
+.title::after { color: cyan; animation: glitch2 0.3s infinite; }
+
+@keyframes glitch1 {
+  0% { transform: translate(0) } 25% { transform: translate(-2px,1px) } 50% { transform: translate(2px,-1px) } 100% { transform: translate(0) }
+}
+@keyframes glitch2 {
+  0% { transform: translate(0) } 25% { transform: translate(2px,-1px) } 50% { transform: translate(-2px,1px) } 100% { transform: translate(0) }
+}
+
+.penguin-area { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.penguin { width: clamp(100px,40vw,200px); max-width:80vw; animation: penguinGlitch 4s infinite; }
+.penguin img { width:100%; pointer-events:none; }
+@keyframes penguinGlitch { 0%,90%,100%{transform:translate(0)} 92%{transform:translate(-4px,2px)} 94%{transform:translate(4px,-2px)} }
+
+.bubble {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: -2px;
+  background: #001a16;
+  right: 7%;
+  border: 3px solid #00ffd0;
+  padding: 10px 14px;
+  font-size: clamp(8px,3vw,12px);
+  color: #00ffd0;
+  text-align: center;
+  max-width: 200px;
+  animation: bubbleGlitch 3s infinite;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: #00ffd0;
+}
+@keyframes bubbleGlitch { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.message-box { font-size: clamp(10px,3vw,14px); text-align:center; color:#00ffd0; min-height:20px; opacity:0.9; animation:textFlicker 2s infinite; }
+@keyframes textFlicker { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+.scanlines { position: fixed; inset:0; background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,.35) 3px); pointer-events:none; }
+
+body::after { content:""; position:fixed; inset:0; background:radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6)); pointer-events:none; }
+
+.binary { position: fixed; font-size: 10px; color: #003333; pointer-events: none; animation: fall linear infinite; }
+@keyframes fall { 0%{transform:translateY(-100px)} 100%{transform:translateY(100vh)} }
+
+img { -webkit-user-drag:none; -webkit-touch-callout:none; }
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<div class="wrapper">
+  <div class="title" data-text="SYSTEM INTERFACE">SYSTEM INTERFACE</div>
+
+  <div class="penguin-area">
+    <div class="bubble" id="bubble">welcome</div>
+    <div class="penguin">
+      <img src="https://raw.githubusercontent.com/klxuz/PENGUIN/main/club-penguin-dance.gif">
+    </div>
+  </div>
+
+  <div class="message-box" id="message">you are now connected</div>
+</div>
+
+<script>
+document.addEventListener("contextmenu", e=>e.preventDefault());
+document.addEventListener("selectstart", e=>e.preventDefault());
+document.addEventListener("dragstart", e=>e.preventDefault());
+document.addEventListener("copy", e=>e.preventDefault());
+
+const bubble = document.getElementById("bubble");
+const message = document.getElementById("message");
+
+const speechAudioMap = {
+  "Hi, I'm M.r.P3ngu1n": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/hiimmrpenguin.wav",
+  "welcome": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/welcome.wav",
+  "you found me": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/youfoundme.wav",
+  "nice to see you": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/nice2seeyou.wav",
+  "hello human": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/hellohuman.wav",
+  "Your Website Got Hax By Me :)": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/yoursitehack.wav",
+  "fuck this site": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/fukts.wav",
+  "corruption": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/corruption.wav",
+  "hello": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/hello.wav",
+  "how are you": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/howareyou.wav",
+  "i love you": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/iloveyou.wav",
+  "m.r.p.e.g.u.in": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/m.r.p.e.g.u.in.wav",
+  "mr penguin": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/mrpenguin.wav",
+  "so is oi so i": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/soisoisoi.wav",
+  "you look good": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/youlookgood.wav",
+  "site trash btw": "https://raw.githubusercontent.com/klxuz/PENGUIN/main/sitetrashbtw.wav"
+};
+
+const messages = ["system hacked", "connection secure", "hacked by M.r.P3ngu1n", "Scripts loaded", "Encrypting files..", "Saving data.."];
+
+// Preload audio
+const audioObjects = {};
+for (const [text, url] of Object.entries(speechAudioMap)) {
+  audioObjects[text] = new Audio(url);
+}
+
+// Start random speech
+function startSpeech() {
+  setInterval(() => {
+    const randomSpeech = Object.keys(audioObjects)[Math.floor(Math.random() * Object.keys(audioObjects).length)];
+    bubble.textContent = randomSpeech;
+    const audio = audioObjects[randomSpeech];
+    audio.currentTime = 0;
+    audio.play();
+  }, 3000);
+}
+
+// Start audio after first interaction
+function initAudio() {
+  startSpeech();
+  document.removeEventListener('click', initAudio);
+  document.removeEventListener('keydown', initAudio);
+  document.removeEventListener('touchstart', initAudio);
+}
+
+// Listen for first click, keypress, or touch
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
+document.addEventListener('touchstart', initAudio);
+
+// Random messages
+setInterval(() => {
+  message.textContent = messages[Math.floor(Math.random() * messages.length)];
+}, 4000);
+
+// Binary rain effect
+function rain() {
+  const el = document.createElement("div");
+  el.className = "binary";
+  el.style.left = Math.random() * 100 + "vw";
+  el.style.animationDuration = (Math.random() * 6 + 4) + "s";
+  el.textContent = Math.random().toString(2).slice(2,12);
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 10000);
+}
+setInterval(rain, 300);
+
+// Flicker effects
+setInterval(() => { 
+  const intensity = Math.random() * 0.15;
+  document.body.style.textShadow = `${intensity*2}px 0 red, -${intensity*2}px 0 cyan`;
+}, 100);
+setInterval(() => {
+  document.body.style.filter = `brightness(${0.9 + Math.random()*0.2}) contrast(${1 + Math.random()*0.2})`;
+}, 200);
+</script>
+</body>
+  </html>
